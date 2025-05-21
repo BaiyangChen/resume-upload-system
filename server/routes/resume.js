@@ -6,6 +6,7 @@ const verifyToken = require('../middlewares/authMiddleware'); // “JWT 权限�
 const pdfParse = require('pdf-parse');
 const fs = require('fs'); //操作文件系统 比如创建文件夹
 const router = express.Router(); //创建一个新的路由对象
+const pool = require('../db');
 
 // 设置上传文件夹和文件名
 const storage = multer.diskStorage({
@@ -55,6 +56,28 @@ router.post('/upload', verifyToken, upload.single('resume'), async(req, res) => 
         console.error('Resume Analysis Fail', err.message);
         res.status(500).json({ msg: 'Upload Success, Analysis Fail', error: err.message });
     }
+});
+
+//保存简历文本到数据库的接口
+router.post('/save', verifyToken, async (req, res) => {
+  const { filename, content } = req.body;
+  const userId = req.user.userId;
+
+  if (!content) {
+    return res.status(400).json({ msg: 'Resume content empty' });
+  }
+
+  try {
+    await pool.query(
+      'INSERT INTO resumes (user_id, filename, raw_text) VALUES ($1, $2, $3)',
+      [userId, filename, content]
+    );
+
+    res.json({ msg: 'Resume save success' });
+  } catch (err) {
+    console.error('Resume Save Fail', err.message);
+    res.status(500).json({ msg: 'Saving Fail on Server' });
+  }
 });
 
 module.exports = router;

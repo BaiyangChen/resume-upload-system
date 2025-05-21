@@ -30,9 +30,22 @@ function Upload() {
     }
   };
 
-  const handleConfirm = () => {
-    alert('你可以把这段文字再保存到数据库（下一步）');
-    console.log(parsedText);
+  const handleConfirm = async() => {
+    try {
+      await axios.post('/api/resume/save', {
+        content: parsedText,
+        filename: file.name
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      alert(' Resume Saved');
+    } catch (err) {
+      alert(err.response?.data?.msg || 'Saving Fail');
+    }
   };
 
   return (
