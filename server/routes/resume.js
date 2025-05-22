@@ -7,6 +7,7 @@ const pdfParse = require('pdf-parse');
 const fs = require('fs'); //操作文件系统 比如创建文件夹
 const router = express.Router(); //创建一个新的路由对象
 const pool = require('../db');
+const extractFields = require('../utils/extractFields');
 
 // 设置上传文件夹和文件名
 const storage = multer.diskStorage({
@@ -67,10 +68,14 @@ router.post('/save', verifyToken, async (req, res) => {
     return res.status(400).json({ msg: 'Resume content empty' });
   }
 
+  const fields = extractFields(content);
+  
+  const { name, email, phone, skills, education, experience } = extractFields(content);
+
   try {
     await pool.query(
-      'INSERT INTO resumes (user_id, filename, raw_text) VALUES ($1, $2, $3)',
-      [userId, filename, content]
+      'INSERT INTO resumes (user_id, filename, raw_text, name, email, phone, skills, education, experience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+      [userId, filename, content, name, email, phone, skills, education, experience]
     );
 
     res.json({ msg: 'Resume save success' });
