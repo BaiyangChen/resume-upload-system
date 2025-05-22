@@ -1,48 +1,59 @@
-## 功能说明
+## Features
 
-- 用户注册 & 登录（JWT 验证）
-- 简历上传（限制 pdf/doc/docx）
-- PDF 自动解析内容
-- 用户可以编辑解析内容并确认保存
-- HR 可查看所有简历并标记状态（待开发）
+- User registration & login (with JWT authentication)  
+- Resume upload (supports PDF, DOC, DOCX formats)  
+- Automatic content extraction from PDF resumes  
+- Users can edit and confirm parsed resume content  
+- HR can view all resumes and update application status (in progress)
 
-## 技术栈
+## Tech Stack
 
-- 前端：React + Axios
-- 后端：Node.js + Express
-- 文件上传：Multer
-- 文档解析：pdf-parse
-- 用户认证：JWT
-- 数据库：PostgreSQL（预期）
+- Frontend: React + Axios  
+- Backend: Node.js + Express  
+- File Upload: Multer  
+- Document Parsing: pdf-parse  
+- Authentication: JWT  
+- Database: PostgreSQL *(planned)*
 
-## 本地运行方法
+## Getting Started (Local Development)
 
-1. 克隆项目：
+1. Clone the project:
    ```bash
    git clone https://github.com/BaiyangChen/resume-upload-system.git
    cd resume-upload-system
+
    ```
 
-## 安装依赖并启动 React 前端
+## Install dependencies and start the React frontend:
 
 npm install
 npm start
 
-## 启动后端
+
+## Start the backend server:
 
 cd server
 npm install
 npm run dev
 
+
 ## TODO
 
-    保存解析内容到数据库
-    实现 HR 查看 + 状态管理页面
-    加入注册/登录页面（已初步实现 JWT 验证）
-    使用 Docker 进行部署优化
+   Save parsed resume content to the database
+   
+   Build HR dashboard with application status management
+   
+   Complete registration/login pages (JWT auth already integrated)
+   
+   Improve deployment using Docker
 
 ## Author
 
-Baiyang Chen
-Computer Science 本科
-简历系统 by @BaiyangChen
+Hi! I'm Baiyang Chen, a Computer Science student based in Montreal, passionate about full-stack development.
+I built this project to deepen my understanding of backend APIs, frontend integration, authentication, and cloud deployment using modern tools.
+
+Feel free to check out more of my work or connect with me:
+
+GitHub: https://github.com/baiyangchen
+
+LinkedIn: https://linkedin.com/in/baiyang-chen
