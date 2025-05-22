@@ -39,11 +39,13 @@ npm run dev
 
 ## TODO
 
-   Save parsed resume content to the database
+   Save parsed resume content to the database - done
    
    Build HR dashboard with application status management
    
-   Complete registration/login pages (JWT auth already integrated)
+   Complete registration/login pages (JWT auth already integrated) - done
+
+   Try to use AI to extract keyword in resume
    
    Improve deployment using Docker
 
