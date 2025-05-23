@@ -5,6 +5,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Upload from './pages/Upload';
+import HrDashboard from './pages/HrDashboard';
+import Dashboard from './pages/Dashboard';
+
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -24,7 +27,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         {/* 如果有 token 就进入上传页，否则跳转登录 */}
+        <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
         <Route path="/upload" element={token ? <Upload /> : <Navigate to="/login" />} />
+        <Route path="/hr" element={token && localStorage.getItem('role') === 'hr' ? <HrDashboard /> : <Navigate to="/login" />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

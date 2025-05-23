@@ -16,9 +16,9 @@ app.use('/api/resume', resumeRoutes);
 app.get('/', async (req, res) => {
     try {
       const result = await pool.query('SELECT NOW()'); // 查询当前时间
-      res.send(`✅ 数据库连接成功，当前时间：${result.rows[0].now}`);
+      res.send(`数据库连接成功，当前时间：${result.rows[0].now}`);
     } catch (err) {
-      console.error('❌ 数据库连接失败：', err);
+      console.error('数据库连接失败：', err);
       res.status(500).send('数据库连接失败');
     }
   });

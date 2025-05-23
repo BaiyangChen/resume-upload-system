@@ -7,7 +7,6 @@ const pdfParse = require('pdf-parse');
 const fs = require('fs'); //操作文件系统 比如创建文件夹
 const router = express.Router(); //创建一个新的路由对象
 const pool = require('../db');
-const extractFields = require('../utils/extractFields');
 
 // 设置上传文件夹和文件名
 const storage = multer.diskStorage({
@@ -61,20 +60,16 @@ router.post('/upload', verifyToken, upload.single('resume'), async(req, res) => 
 
 //保存简历文本到数据库的接口
 router.post('/save', verifyToken, async (req, res) => {
-  const { filename, content } = req.body;
+  const { filename, content, name, email, phone, skills, education, experience } = req.body;
   const userId = req.user.userId;
 
   if (!content) {
     return res.status(400).json({ msg: 'Resume content empty' });
   }
 
-  const fields = extractFields(content);
-  
-  const { name, email, phone, skills, education, experience } = extractFields(content);
-
   try {
     await pool.query(
-      'INSERT INTO resumes (user_id, filename, raw_text, name, email, phone, skills, education, experience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+      'INSERT INTO resumes (user_id, filename, raw_text, name, email, phone, education, experience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
       [userId, filename, content, name, email, phone, skills, education, experience]
     );
 
@@ -82,6 +77,43 @@ router.post('/save', verifyToken, async (req, res) => {
   } catch (err) {
     console.error('Resume Save Fail', err.message);
     res.status(500).json({ msg: 'Saving Fail on Server' });
+  }
+});
+
+//查看简历，只有hr可以
+router.get('/all', verifyToken, async (req, res) => {
+  if (req.user.role !== 'hr') {
+    return res.status(403).json({ msg: 'Only HR can view all resumes' });
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT id, name, email, phone, education, experience, skills, status, created_at
+      FROM resumes
+      ORDER BY created_at DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Query Fail' });
+  }
+});
+
+//修改简历状态
+router.put('/status/:id', verifyToken, async (req, res) => {
+  if (req.user.role !== 'hr') {
+    return res.status(403).json({ msg: 'Only HR can modify resume status' });
+  }
+
+  const resumeId = req.params.id;
+  const { status } = req.body;
+
+  try {
+    await pool.query('UPDATE resumes SET status = $1 WHERE id = $2', [status, resumeId]);
+    res.json({ msg: 'Update Resume Status Success' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Update Resume Status Fail' });
   }
 });
 
