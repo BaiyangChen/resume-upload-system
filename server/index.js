@@ -9,8 +9,8 @@ require('dotenv').config();
 
 app.use(cors());  //允许前端来访问我
 app.use(express.json());  //让后端能读懂前端发来的 JSON 格式的数据
-app.use('/api/auth', authRoutes);
-app.use('/api/resume', resumeRoutes);
+app.use('/api/auth', authRoutes);//所有请求到/api/auth/...都会到authRoutes去处理
+app.use('/api/resume', resumeRoutes);//所有前端请求到 /api/resume/... 都会到resumeRoutes去处理
 
 //测试用的小网址，当别人打开 http://localhost:5000/ 时，req是请求，res是回应
 app.get('/', async (req, res) => {

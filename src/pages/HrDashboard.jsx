@@ -6,8 +6,8 @@ const token = localStorage.getItem('token');
 
 function HrDashboard() {
   const [resumes, setResumes] = useState([]);
-  console.log('TOKEN:', token);
-  console.log('ROLE:', localStorage.getItem('role'));
+  const [searchName, setSearchName] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
   useEffect(() => {
     fetchResumes();
   }, []);
@@ -35,10 +35,29 @@ function HrDashboard() {
       alert(err.response?.data?.msg | 'Status Update Fail');
     }
   };
+  const filteredResumes = resumes.filter(r =>
+    r.name?.includes(searchName) &&
+    (filterStatus === '' || r.status === filterStatus)
+  );
 
   return (
     <div>
       <h2>HR Dashboard</h2>
+      {/* 筛选表单 */}
+      <div style={{ marginBottom: '20px' }}>
+        <input
+          type="text"
+          placeholder="Search by Name"
+          value={searchName}
+          onChange={e => setSearchName(e.target.value)}
+          style={{ marginRight: '10px' }}
+        />
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+          <option value="">All Status</option>
+          {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+      {/* 这是简历表格 */}
       <table border="1" cellPadding="8">
         <thead>
           <tr>
@@ -53,7 +72,7 @@ function HrDashboard() {
           </tr>
         </thead>
         <tbody>
-          {resumes.map((r) => (
+          {filteredResumes.map((r) => (
             <tr key={r.id}>
               <td>{r.name}</td>
               <td>{r.email}</td>

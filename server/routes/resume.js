@@ -5,6 +5,7 @@ const path = require('path'); //处理文件路径后缀等
 const verifyToken = require('../middlewares/authMiddleware'); // “JWT 权限中间件” 判断用户有没有登陆
 const pdfParse = require('pdf-parse');
 const fs = require('fs'); //操作文件系统 比如创建文件夹
+const axios = require('axios');
 const router = express.Router(); //创建一个新的路由对象
 const pool = require('../db');
 
@@ -116,5 +117,56 @@ router.put('/status/:id', verifyToken, async (req, res) => {
     res.status(500).json({ msg: 'Update Resume Status Fail' });
   }
 });
+
+router.post('/extract', async (req, res) => {
+  const resumeText = req.body.text;
+
+//这是传给llama3的问题，也叫prompt
+  const prompt = `
+You are a resume parser AI. Extract the following fields from the resume and return ONLY valid JSON:
+- Name
+- Email
+- Phone
+- Education (school, degree, year)
+- Work Experience (job title, company, year)
+- Skills
+
+Resume:
+${resumeText}
+
+Strictly output JSON without any extra text.
+  `;
+//这是ollama模型的接口
+  try {
+    const response = await axios.post('http://localhost:11434/api/generate', {
+      model: 'llama3',
+      prompt: prompt,
+      stream: false
+    });
+    let text = response.data.response;
+    console.log(typeof text);
+    console.log("模型清洗前返回：", text);
+
+    const possiblePrefix = "Here is the extracted information in valid JSON format:";
+    if (text.startsWith(possiblePrefix)) {
+      text = text.slice(possiblePrefix.length).trim();
+    }
+    text = text.replace(/```json|```/g, '').trim();
+    const firstBrace = text.indexOf('{');
+    const lastBrace = text.lastIndexOf('}');
+    if (firstBrace === -1 || lastBrace === -1) {
+      throw new Error("无法在模型返回中找到JSON段落");
+    }
+    const jsonSubstring = text.substring(firstBrace, lastBrace + 1).trim();
+    console.log("模型清洗后返回：", jsonSubstring);
+    const parsed = JSON.parse(jsonSubstring);
+    
+    res.json({ result: parsed });
+    } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to extract fields' });
+  }
+});
+
 
 module.exports = router;

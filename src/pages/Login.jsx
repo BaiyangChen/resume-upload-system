@@ -1,12 +1,12 @@
 // src/pages/Login.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -15,7 +15,7 @@ function Login() {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('role', res.data.role);
       alert('Login Success');
-      navigate('/dashboard');
+      window.location.href = res.data.role === 'hr' ? '/hr' : '/upload';
     } catch (err) {
       alert(err.response?.data?.msg || 'Login Fail');
     }
