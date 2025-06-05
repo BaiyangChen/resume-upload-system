@@ -22,12 +22,49 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <h2>Login</h2>
-      <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      backgroundColor: '#f0f2f5'
+    }}>
+      <form onSubmit={handleLogin} style={{
+        padding: '40px',
+        borderRadius: '8px',
+        backgroundColor: 'white',
+        boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+        width: '300px'
+      }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Login</h2>
+        <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required style={{
+            width: '100%',
+            padding: '10px',
+            marginBottom: '15px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            boxSizing: 'border-box'
+          }}/>
+        <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required style={{
+            width: '100%',
+            padding: '10px',
+            marginBottom: '20px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            boxSizing: 'border-box'
+          }}/>
+        <button type="submit" style={{
+          width: '100%',
+          padding: '10px',
+          borderRadius: '4px',
+          backgroundColor: '#4CAF50',
+          color: 'white',
+          border: 'none',
+          cursor: 'pointer',
+          fontWeight: 'bold'
+        }}>Login</button>
+      </form>
+    </div>
   );
 }
 

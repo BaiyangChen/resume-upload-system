@@ -9,6 +9,7 @@ function Upload() {
   const [fields, setFields] = useState({
     name: '', email: '', phone: '', education: '', experience: '', skills:''
   });
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
     if (role !== 'user') {
@@ -16,7 +17,7 @@ function Upload() {
     }
   const handleUpload = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     const formData = new FormData();
     formData.append('resume', file);
 
@@ -32,6 +33,8 @@ function Upload() {
       setFields(extracted);
     } catch (err) {
       alert(err.response?.data?.msg || 'Upload Fail');
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -40,7 +43,12 @@ function Upload() {
       await axios.post('/api/resume/save', {
         content: parsedText,
         filename: file.name,
-        ...fields
+        name: fields.name,
+        email: fields.email,
+        phone: fields.phone,
+        education: fields.education.split('\n').map(e => e.trim()),
+        experience: fields.experience.split('\n').map(e => e.trim()),
+        skills: fields.skills.split('\n').map(e => e.trim())
       }, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -119,32 +127,33 @@ function Upload() {
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
       <h2>Upload Resume</h2>
       <form onSubmit={handleUpload}>
         <input type="file" onChange={e => setFile(e.target.files[0])} accept=".pdf" required />
-        <button type="submit">Upload</button>
+        <button type="submit" style={{ marginLeft: "10px" }}>Upload</button>
       </form>
+      {loading && <p style={{ color: "blue", marginTop: "20px" }}>Loading... extracting resume fields...</p>}
 
       {parsedText && (
-        <div>
+        <div style={{ marginTop: "30px" }}>
         <h3>Resume Detail</h3>
     
-        <label>Name:<input value={fields.name || ''} onChange={e => setFields({ ...fields, name: e.target.value })} /></label><br />
-        <label>Email:<input value={fields.email || ''} onChange={e => setFields({ ...fields, email: e.target.value })} /></label><br />
-        <label>Phone:<input value={fields.phone || ''} onChange={e => setFields({ ...fields, phone: e.target.value })} /></label><br />
+        <label>Name:<br /><input value={fields.name || ''} onChange={e => setFields({ ...fields, name: e.target.value })} /></label><br /><br />
+        <label>Email:<br /><input value={fields.email || ''} onChange={e => setFields({ ...fields, email: e.target.value })} /></label><br /><br />
+        <label>Phone:<br /><input value={fields.phone || ''} onChange={e => setFields({ ...fields, phone: e.target.value })} /></label><br /><br />
     
         <label>Skills:<br />
           <textarea rows="4" cols="50" value={fields.skills || ''} onChange={e => setFields({ ...fields, skills: e.target.value })} />
-        </label><br />
+        </label><br /><br />
     
         <label>Education:<br />
           <textarea rows="4" cols="50" value={fields.education || ''} onChange={e => setFields({ ...fields, education: e.target.value })} />
-        </label><br />
+        </label><br /><br />
     
         <label>Experience:<br />
           <textarea rows="4" cols="50" value={fields.experience || ''} onChange={e => setFields({ ...fields, experience: e.target.value })} />
-        </label><br />
+        </label><br /><br />
     
         <button onClick={handleConfirm}>Confirm and Save</button>
       </div>

@@ -70,7 +70,7 @@ router.post('/save', verifyToken, async (req, res) => {
 
   try {
     await pool.query(
-      'INSERT INTO resumes (user_id, filename, raw_text, name, email, phone, education, experience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+      'INSERT INTO resumes (user_id, filename, raw_text, name, email, phone, skills, education, experience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
       [userId, filename, content, name, email, phone, skills, education, experience]
     );
 
